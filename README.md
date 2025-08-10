@@ -7,12 +7,13 @@ Built with **Flask**, **Selenium**, and **Bootstrap**.
 ---
 
 ## 📽️ Demo Video
-[![Watch the demo](https://img.shields.io/badge/Watch-Demo-red)](https://youtube.com/your-demo-video-link)
+[![Watch the demo](https://img.shields.io/badge/Watch-Demo-red)]([https://youtube.com/your-demo-video-link](https://youtu.be/NIxutg4qars))
 
 ---
 
 ## 🖼️ Screenshots
-<img width="1366" height="622" alt="Screenshot (99)" src="https://github.com/user-attachments/assets/0345b05a-2962-4bb5-b606-f1ba8b6e25cd" />
+<img width="1340" height="638" alt="Screenshot (98)" src="https://github.com/user-attachments/assets/d9b8e9f6-0c9b-46df-b037-2df488860aac" />
+
 <img width="1366" height="622" alt="Screenshot (99)" src="https://github.com/user-attachments/assets/b6d5d573-0fbf-4a6c-b4d7-335557862040" />
 
 
@@ -230,7 +231,7 @@ HOST=0.0.0.0
 
 ---
 
-Thank You 🙏
+# Thank You 🙏
 
 
 
