@@ -82,7 +82,7 @@ python app.py
 
 ---
 
-🛡️ CAPTCHA Strategy – Professional & Legal Approach
+### 🛡️ CAPTCHA Strategy – Professional & Legal Approach
 
 Implementation Philosophy:
 Our CAPTCHA handling strategy prioritizes legal compliance and user experience over aggressive automation, demonstrating professional software development practices that respect website terms of service while maintaining functionality.
@@ -92,7 +92,7 @@ Why This Approach Works:
 - Fallback Mechanisms – Multiple selectors ensure reliability across website changes
 - Future-Proof – Adapts to layout modifications in court website
 
-1️⃣ Professional CAPTCHA Workflow:
+### 1️⃣ Professional CAPTCHA Workflow:
 1. Automatic Detection → Scraper identifies CAPTCHA elements using multiple selectors
 2. Image Capture → Screenshot CAPTCHA and save to static/captcha/ directory
 3. User Notification → Redirect to clean, accessible solving interface
@@ -110,7 +110,7 @@ def _handle_captcha(self, driver):
         return "manual_required"
     return True
 ```
-## 2️⃣ User-Friendly CAPTCHA Interface
+### 2️⃣ User-Friendly CAPTCHA Interface
 
 - **Clean Design** – Professional `/solve-captcha` route with intuitive interface  
 - **Clear Instructions** – Step-by-step guidance for users  
@@ -138,7 +138,7 @@ def _handle_captcha(self, driver):
 
 ---
 
-🐳 Docker Deployment  
+## 🐳 Docker Deployment  
 
 Quick Start  
 # Clone and navigate 
@@ -165,7 +165,7 @@ docker run -p 5000:5000 delhi-court-fetcher
 
  ---
 
- 🎯 Usage
+## 🎯 Usage
 
 1. Select Case Type – Choose from dropdown (Civil Appeal, Writ Petition, etc.)
 2. Enter Case Number – Input numerical case number
@@ -201,7 +201,7 @@ delhi-court-fetcher/
 
 ---
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 Backend: Flask 3.0, SQLAlchemy, Selenium 4.15, BeautifulSoup4  
 Frontend: Bootstrap 5, Font Awesome 6, Custom CSS/JS with dark theme  
 Database: SQLite with comprehensive logging  
@@ -210,23 +210,23 @@ Scraping: Chrome WebDriver with professional CAPTCHA handling
 
 ---
 
-# 📊 Environment Variables  
+## 📊 Environment Variables  
 Create a `.env` file in the project root:
 
-# Flask Configuration
+### Flask Configuration
 FLASK_SECRET_KEY=your-secret-key-generate-strong-random-string  
 FLASK_ENV=development  
 DEBUG=True  
 
-# Database Configuration
+### Database Configuration
 DATABASE_URL=sqlite:///court_data.db  
 
-# Application Configuration
+### Application Configuration
 DEMO_MODE=True  
 MAX_RETRIES=3  
 TIMEOUT_SECONDS=30  
 
-# Optional: For production deployment
+### Optional: For production deployment
 PORT=5000  
 HOST=0.0.0.0  
 
