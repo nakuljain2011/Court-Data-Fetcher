@@ -3,7 +3,6 @@
 Professional web application for fetching case information from Delhi High Court with automated search, manual CAPTCHA handling, dark/light themes & Docker deployment.  
 Built with **Flask**, **Selenium**, and **Bootstrap**.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -13,23 +12,11 @@ Built with **Flask**, **Selenium**, and **Bootstrap**.
 ---
 
 ## 🖼️ Screenshots
-(Add screenshots here with Markdown image links)
+<img width="1366" height="622" alt="Screenshot (99)" src="https://github.com/user-attachments/assets/0345b05a-2962-4bb5-b606-f1ba8b6e25cd" />
+<img width="1366" height="622" alt="Screenshot (99)" src="https://github.com/user-attachments/assets/b6d5d573-0fbf-4a6c-b4d7-335557862040" />
 
----
 
-## 📜 Table of Contents
-- [Overview](#-overview)
-- [Court Chosen](#-court-chosen)
-- [Features](#-features)
-- [Installation](#-installation)
-- [CAPTCHA Strategy](#️-captcha-strategy---professional--legal-approach)
-- [Docker Deployment](#-docker-deployment)
-- [Usage](#-usage)
-- [Project Structure](#-project-structure)
-- [Tech Stack](#️-tech-stack)
-- [Environment Variables](#-environment-variables)
-- [Contributing](#-contributing)
-- [License](#license)
+
 
 ---
 
@@ -221,7 +208,7 @@ Scraping: Chrome WebDriver with professional CAPTCHA handling
 
 ---
 
-📊 Environment Variables  
+# 📊 Environment Variables  
 Create a `.env` file in the project root:
 
 # Flask Configuration
