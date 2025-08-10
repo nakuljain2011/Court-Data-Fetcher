@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  court-data-fetcher:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: court-data-fetcher
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist database and logs
+      - ./data:/app/data
+      - ./static/captcha:/app/static/captcha
+    environment:
+      - DEMO_MODE=true
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - court-fetcher-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  court-fetcher-network:
+    driver: bridge
+
+volumes:
+  court-data:
+    driver: local

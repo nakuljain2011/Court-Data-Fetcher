@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Details - Court Data Fetcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+        <span>Dark Mode</span>
+    </button>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- Main Case Details Card -->
+                <div class="card shadow-lg animate-in">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>Case Details
+                            {% if demo_mode %}
+                                <span class="badge bg-warning text-dark ms-2">
+                                    <i class="fas fa-flask me-1"></i>DEMO
+                                </span>
+                            {% endif %}
+                        </h3>
+                        <div class="d-flex gap-2">
+                            {% if cached %}
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-clock me-1"></i>Cached Data
+                            </span>
+                            {% elif demo_mode %}
+                            <span class="badge bg-info text-dark">
+                                <i class="fas fa-flask me-1"></i>Sample Data
+                            </span>
+                            {% else %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-sync me-1"></i>Fresh Data
+                            </span>
+                            {% endif %}
+                            <a href="{{ url_for('index') }}" class="btn btn-light">
+                                <i class="fas fa-search me-1"></i>New Search
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Demo Mode Indicator -->
+                        {% if demo_mode %}
+                        <div class="alert alert-success" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle me-3 fs-4"></i>
+                                <div>
+                                    <h6 class="mb-1"><strong>Demo Mode Active</strong></h6>
+                                    <p class="mb-0">Displaying realistic sample case data for demonstration purposes. In live mode, this would show actual court information from Delhi High Court database.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Cache Notification -->
+                        {% if cached and not demo_mode %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Cached Data:</strong> This information was retrieved from cache and may not reflect the latest updates.
+                            <form method="POST" action="{{ url_for('search_case') }}" class="d-inline ms-2">
+                                <input type="hidden" name="case_type" value="{{ case_data.case_type }}">
+                                <input type="hidden" name="case_number" value="{{ case_data.case_number }}">
+                                <input type="hidden" name="filing_year" value="{{ case_data.filing_year }}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-sync me-1"></i>Refresh Data
+                                </button>
+                            </form>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <!-- Case Information -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="glass-effect p-4 h-100">
+                                    <h5 class="border-bottom pb-3 mb-4 text-primary">
+                                        <i class="fas fa-info-circle me-2"></i>Case Information
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-folder me-2 text-primary"></i>Case Type:</strong>
+                                                <span class="badge bg-primary">{{ case_data.case_type }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-hashtag me-2 text-primary"></i>Case Number:</strong>
+                                                <span class="fs-6 fw-bold">{{ case_data.case_number }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-calendar me-2 text-primary"></i>Filing Year:</strong>
+                                                <span class="fs-6 fw-bold">{{ case_data.filing_year }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-calendar-plus me-2 text-success"></i>Filing Date:</strong>
+                                                {% if case_data.filing_date and case_data.filing_date != 'Not available' %}
+                                                    <span class="badge bg-success">{{ case_data.filing_date }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">Not available</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-clock me-2 text-warning"></i>Next Hearing:</strong>
+                                                {% if case_data.next_hearing_date and case_data.next_hearing_date != 'Not available' and case_data.next_hearing_date != 'Not scheduled' %}
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-calendar-day me-1"></i>{{ case_data.next_hearing_date }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">Not scheduled</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-flag me-2 text-info"></i>Status:</strong>
+                                                {% if case_data.case_status and case_data.case_status != 'Not available' %}
+                                                    <span class="badge bg-info">{{ case_data.case_status }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">Not available</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center py-2">
+                                                <strong><i class="fas fa-user-tie me-2 text-secondary"></i>Judge/Bench:</strong>
+                                                {% if case_data.judge_name and case_data.judge_name != 'Not available' %}
+                                                    <span class="fw-semibold">{{ case_data.judge_name }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">Not available</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Parties Information -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="glass-effect p-4 h-100">
+                                    <h5 class="border-bottom pb-3 mb-4 text-primary">
+                                        <i class="fas fa-users me-2"></i>Parties
+                                    </h5>
+                                    <div class="mb-4">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-user me-2 text-success fs-5"></i>
+                                            <strong class="text-success">Petitioner(s):</strong>
+                                        </div>
+                                        <div class="p-3 border-start border-success border-4 bg-light bg-opacity-50 rounded-end">
+                                            {% if case_data.parties_petitioner and case_data.parties_petitioner != 'Not available' %}
+                                                {{ case_data.parties_petitioner }}
+                                            {% else %}
+                                                <span class="text-muted fst-italic">Information not available</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mb-0">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-user me-2 text-danger fs-5"></i>
+                                            <strong class="text-danger">Respondent(s):</strong>
+                                        </div>
+                                        <div class="p-3 border-start border-danger border-4 bg-light bg-opacity-50 rounded-end">
+                                            {% if case_data.parties_respondent and case_data.parties_respondent != 'Not available' %}
+                                                {{ case_data.parties_respondent }}
+                                            {% else %}
+                                                <span class="text-muted fst-italic">Information not available</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PDF Documents Section -->
+                        {% if pdf_links %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-file-pdf me-2"></i>Orders & Judgments
+                                            {% if demo_mode %}
+                                                <small class="text-light opacity-75">(Demo Links)</small>
+                                            {% endif %}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover mb-0">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th width="10%" class="text-center"><i class="fas fa-file"></i></th>
+                                                        <th width="60%">Document</th>
+                                                        <th width="20%">Type</th>
+                                                        <th width="10%" class="text-center">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for pdf in pdf_links %}
+                                                    <tr>
+                                                        <td class="text-center align-middle">
+                                                            <i class="fas fa-file-pdf text-danger fs-4"></i>
+                                                        </td>
+                                                        <td class="align-middle">
+                                                            <div class="fw-semibold">{{ pdf.text or 'Court Document' }}</div>
+                                                            <small class="text-muted">
+                                                                {% if demo_mode %}
+                                                                    Demo document - {{ pdf.type or 'Document' }} sample
+                                                                {% else %}
+                                                                    {{ pdf.url | truncate(50) }}
+                                                                {% endif %}
+                                                            </small>
+                                                        </td>
+                                                        <td class="align-middle">
+                                                            <span class="badge bg-secondary">{{ pdf.type or 'Document' }}</span>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="{{ url_for('download_pdf', url=pdf.url) }}" 
+                                                               class="btn btn-sm btn-outline-primary" target="_blank" 
+                                                               title="{{ 'Demo: ' if demo_mode else '' }}Download {{ pdf.text or 'Document' }}">
+                                                                <i class="fas fa-download"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Case History Section with Enhanced Timeline -->
+                        {% if case_history %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #0dcaf0, #0aa2c0);">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-history me-2"></i>Case History
+                                            {% if demo_mode %}
+                                                <small class="text-light opacity-75">(Sample Timeline)</small>
+                                            {% endif %}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="timeline">
+                                            {% for entry in case_history %}
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6 class="timeline-title">{{ entry.date }}</h6>
+                                                    <p class="timeline-text">
+                                                        {{ entry.proceedings[:200] }}
+                                                        {% if entry.proceedings|length > 200 %}
+                                                            <span class="text-muted">... 
+                                                                <a href="#" class="text-decoration-none" onclick="showFullText(this, '{{ entry.proceedings | e }}')">
+                                                                    read more
+                                                                </a>
+                                                            </span>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- No Documents/History Alert -->
+                        {% if not pdf_links and not case_history %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    {% if demo_mode %}
+                                        This demo case shows basic information only. Full cases would include additional documents and history.
+                                    {% else %}
+                                        No additional documents or case history found for this case.
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Footer Information -->
+                        <div class="row mt-5 pt-4 border-top">
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Last updated: {{ case_data.last_updated.strftime('%Y-%m-%d %H:%M:%S') if case_data.last_updated else 'Unknown' }}
+                                </small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-muted">
+                                    <i class="fas fa-globe me-1"></i>
+                                    Source: {% if demo_mode %}Demo Data (Sample){% else %}Delhi High Court Official Website{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Action Buttons -->
+                <div class="card mt-4 animate-in">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>New Search
+                            </a>
+                            <button onclick="window.print()" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-print me-2"></i>Print Details
+                            </button>
+                            <a href="{{ url_for('search_history') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-history me-2"></i>Search History
+                            </a>
+                            {% if demo_mode %}
+                            <button class="btn btn-outline-info btn-lg" onclick="showDemoInfo()">
+                                <i class="fas fa-info-circle me-2"></i>Demo Info
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme Toggle Functionality (same as index.html)
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const themeIcon = themeToggle.querySelector('i');
+        const themeText = themeToggle.querySelector('span');
+        
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+        
+        function updateThemeButton(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+        
+        // Rest of your existing functions...
+    });
+    
+    function showFullText(element, fullText) {
+        const parentElement = element.closest('.timeline-text');
+        if (parentElement) {
+            parentElement.innerHTML = fullText;
+        }
+    }
+    
+    function showDemoInfo() {
+        const modal = `
+            <div class="modal fade" id="demoInfoModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-flask me-2"></i>Demo Mode Information
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-info-circle me-2 text-info"></i>About This Demo</h6>
+                                    <p>This application is running in <strong>Demo Mode</strong> with realistic sample data:</p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i><strong>Case Data:</strong> Realistic court case information</li>
+                                        <li><i class="fas fa-check text-success me-2"></i><strong>PDF Links:</strong> Demo document links</li>
+                                        <li><i class="fas fa-check text-success me-2"></i><strong>Case History:</strong> Sample timeline</li>
+                                        <li><i class="fas fa-check text-success me-2"></i><strong>Database:</strong> All searches logged normally</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-code me-2 text-primary"></i>Live Mode Features</h6>
+                                    <p>In <strong>Live Mode</strong>, this application would:</p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Connect to Delhi High Court website</li>
+                                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Handle CAPTCHA verification manually</li>
+                                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Extract real case information</li>
+                                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Provide actual court documents</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                                <i class="fas fa-thumbs-up me-2"></i>Got it!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modal);
+        const modalElement = new bootstrap.Modal(document.getElementById('demoInfoModal'));
+        modalElement.show();
+        
+        // Remove modal from DOM when hidden
+        document.getElementById('demoInfoModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+    
+    // Auto-dismiss alerts after 10 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            if (alert.classList.contains('show')) {
+                alert.classList.remove('show');
+                setTimeout(function() {
+                    alert.remove();
+                }, 150);
+            }
+        }, 10000);
+    });
+    
+    // Print styles
+    const printStyles = `
+        @media print {
+            .btn, .alert, .card-header .badge, .modal, .theme-toggle { display: none !important; }
+            .card { border: none !important; box-shadow: none !important; }
+            .card-body { padding: 0 !important; }
+            .timeline-item::before { background-color: #000 !important; }
+        }
+    `;
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = printStyles;
+    document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>
