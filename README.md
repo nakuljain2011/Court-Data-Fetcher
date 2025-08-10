@@ -7,7 +7,8 @@ Built with **Flask**, **Selenium**, and **Bootstrap**.
 ---
 
 ## 📽️ Demo Video
-[![Watch the demo](https://img.shields.io/badge/Watch-Demo-red)]([https://youtube.com/your-demo-video-link](https://youtu.be/NIxutg4qars))
+[![Watch the video](https://img.youtube.com/vi/NIxutg4qars/maxresdefault.jpg)](https://youtu.be/NIxutg4qars)
+
 
 ---
 
